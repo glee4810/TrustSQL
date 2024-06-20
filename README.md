@@ -4,14 +4,14 @@
 
 Text-to-SQL allows users to interact with databases using natural language, simplifying information retrieval without requiring special knowledge of databases or SQL. Despite the success of large language models in translating natural language to SQL, widespread deployment remains limited due to two main challenges: (1) users' lack of understanding of the models' capabilities (such as individual models' text-to-SQL generation capabilities, the scope of the database contents, and SQL functionalities) and (2) the absence of abstention mechanisms, which can result in incorrect SQL generation going unnoticed.
 
-We believe that gaining trust in model outputs is crucial for the broader adoption of text-to-SQL models, thereby unlocking the full potential of big data stored in databases, especially for domain experts. As a step towards this, we introduce TrustSQL, a benchmark designed to evaluate text-to-SQL reliability, defined as a model's ability to accurately handle any type of input question (both feasible and infeasible) by allowing models to selectively generate SQL and abstain from the rest.
+We believe that building trust in model outputs is crucial for the broader adoption of text-to-SQL models, thereby unlocking the full potential of big data stored in databases, especially for domain experts. As a step towards this, we introduce TrustSQL, a benchmark designed to evaluate text-to-SQL reliability, defined as a model's ability to accurately handle any type of input question (both feasible and infeasible) by allowing models to selectively generate SQL and abstain from the rest.
 
 The benchmark data is released along with our paper [TrustSQL: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring](https://arxiv.org/abs/2403.15879) (Preprint). For further details, please refer to the paper.
 
 
 ## Interactive Demo
 
-Please check out the following [demo page](http://3.36.112.42:8501).
+Please check out our [demo page](http://3.36.112.42:8501) for an interactive experience of our benchmark. It's important to note that the model used for this demo still makes mistakes in SQL generation without abstention. We believe that building trust in the generated SQL outputs is crucial for the broader adoption of text-to-SQL models.
 
 
 ## Dataset
