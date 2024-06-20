@@ -9,6 +9,11 @@ We believe that gaining trust in model outputs is crucial for the broader adopti
 The benchmark data is released along with our paper [TrustSQL: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring](https://arxiv.org/abs/2403.15879) (Preprint). For further details, please refer to the paper.
 
 
+## Interactive Demo
+
+Please check out the following [demo page](http://3.36.112.42:8501).
+
+
 ## Dataset
 
 TrustSQL can be downloaded from this [Google Drive link](https://drive.google.com/file/d/1j0Otma8aC-e8-7ej-nwObpB-S-pxPpZX/view?usp=sharing). Locate the unzipped file in the main directory.
