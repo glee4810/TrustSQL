@@ -11,7 +11,7 @@ The benchmark data is released along with our paper [TrustSQL: Benchmarking Text
 
 ## Interactive Demo
 
-Please check out our [demo page](http://3.36.112.42:8501) for an interactive experience of our benchmark. It's important to note that the model used for this demo still makes mistakes in SQL generation without abstention. We believe that building trust in the generated SQL outputs is crucial for the broader adoption of text-to-SQL models.
+Please check out our [demo page](http://3.36.112.42:8501) for an interactive experience of the TrustSQL benchmark. It's important to note that the model used for this demo still makes mistakes in SQL generation without abstention. We believe that building trust in the model outputs is crucial for the broader adoption of text-to-SQL models.
 
 
 ## Dataset
