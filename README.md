@@ -32,9 +32,11 @@ Ask us questions on our Github issues page or contact gyubok.lee@kaist.ac.kr.
 
 ## Citation
 
+```
 @article{lee2024trustsql,
   title={TrustSQL: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring}, 
   author={Lee, Gyubok and Chay, Woosog and Cho, Seonhee and Choi, Edward},
   journal={arXiv preprint arXiv:2403.15879},
   year={2024}
 }
+```
