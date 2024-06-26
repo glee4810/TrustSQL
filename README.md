@@ -15,7 +15,7 @@ The benchmark data is released along with our paper [TrustSQL: Benchmarking Text
   <img src="image/demo.png" height="300" />
 </p>
 
-Please check out our [demo page](http://3.36.112.42:8501) for an interactive experience of the TrustSQL benchmark. It's important to note that the model used for this demo still makes mistakes in SQL generation without abstention.
+Please check out our [demo page](http://43.203.123.99:8501) for an interactive experience of the TrustSQL benchmark. It's important to note that the model used for this demo still makes mistakes in SQL generation without abstention.
 
 
 ## Dataset
