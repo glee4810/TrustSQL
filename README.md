@@ -24,6 +24,8 @@ TrustSQL can be downloaded from this [Google Drive link](https://drive.google.co
 
 Text-to-SQL data is licensed under CC-BY-4.0. One of the four databases in TrustSQL is based on the MIMIC-IV demo. Please review the corresponding license terms on the [MIMIC-IV Demo website](https://physionet.org/content/mimic-iv-demo/2.2/) before use.
 
+Each database consists of schema information (`tables.json`) and questions for each data split (`{database}_{split}.json`). Files ending with "combined_subset" contain existing TrustSQL samples combined with sampled data from [TriageSQL](https://github.com/chatc/TriageSQL) for infeasible samples.
+
 
 ## Have Questions?
 
