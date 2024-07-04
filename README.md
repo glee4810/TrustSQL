@@ -27,6 +27,43 @@ Text-to-SQL data is licensed under CC-BY-4.0. One of the four databases in Trust
 Each database consists of schema information (`tables.json`), actual database (`{database}.sqlite`), and text-to-SQL samples for each data split (`{database}_{split}.json`). Files ending with "combined_subset" contain TrustSQL samples combined with data sampled from question answering datasets (i.e., MS Marco, CoQA, and QuAC) to augment infeasible samples in the training and validation splits.
 
 
+## Models
+
+### Pipeline-based Approach
+
+To construct a pipeline that includes multiple models, you can use the following commands:
+
+```
+bash ./script/run_clsprompt.sh # CLS_Prompt - Pre-abstention before SQL generation (i.e., filtering out infeasible questions)
+bash ./script/run_sqlprompt.sh # SQLPrompt - SQL generation
+bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL generation (i.e., filtering out incorrect SQL outputs)
+```
+
+### Unified Approach
+
+```
+bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - Abstention for infeasible question demonstration
+bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - Abstention through voting sampled outputs
+```
+
+
+## Evaluation
+
+To evaluate the model performance, run the following code:
+
+### Pipeline-based Approach
+```
+bash script/evaluate_sqlprompt_cls+error.sh
+
+```
+
+### Unified Approach
+```
+bash script/evaluate_sqlprompt_demo.sh
+bash script/evaluate_sqlprompt_voting.sh
+```
+
+
 ## Have Questions?
 
 Ask us questions on our Github issues page or contact gyubok.lee@kaist.ac.kr.
