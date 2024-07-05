@@ -29,9 +29,11 @@ Each database consists of schema information (`tables.json`), actual database (`
 
 ## Models
 
-To construct a pipeline that includes multiple models, you can use the following commands:
+The TrustSQL benchmark can be addressed using two approaches: pipeline-based and unified. Below are three example methods utilizing OpenAI models.
 
 ### Pipeline-based Approach
+
+1) CLS<sub>P</sub> → SQLPROMPT → ERROR<sub>P</sub>
 
 <p align="left" float="middle">
   <img src="image/pipeline.png" height="120" />
@@ -44,20 +46,25 @@ bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL gene
 ```
 
 ### Unified Approach
+
+2) SQLPROMPT[Demo]
+
 <p align="left" float="middle">
-  <img src="image/sqlprompt_demo.png" height="100" />
+  <img src="image/sqlprompt_demo.png" height="70" />
 </p>
 
 ```
 bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - SQL generation and abstention through demonstrations
 ```
 
+3) SQLPROMPT[Voting]
+
 <p align="left" float="middle">
   <img src="image/sqlprompt_voting.png" height="150" />
 </p>
 
 ```
-bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and abstention through voting sampled outputs
+bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and abstention through voting 5 sampled outputs
 ```
 
 
@@ -65,17 +72,18 @@ bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and a
 
 To evaluate the model performance, run the following code:
 
-### Pipeline-based Approach
 ```
+# 1) CLS_P → SQLPROMPT → ERROR_P
 bash script/evaluate_sqlprompt_cls+error.sh
 ```
 
-### Unified Approach
 ```
+# 2) SQLPROMPT[Demo]
 bash script/evaluate_sqlprompt_demo.sh
 ```
 
 ```
+# 3) SQLPROMPT[Voting]
 bash script/evaluate_sqlprompt_voting.sh
 ```
 
