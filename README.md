@@ -33,8 +33,8 @@ To construct a pipeline that includes multiple models, you can use the following
 
 ### Pipeline-based Approach
 
-<p align="middle" float="middle">
-  <img src="image/pipeline.png" height="100" />
+<p align="left" float="middle">
+  <img src="image/pipeline.png" height="120" />
 </p>
 
 ```
@@ -44,7 +44,7 @@ bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL gene
 ```
 
 ### Unified Approach
-<p align="middle" float="middle">
+<p align="left" float="middle">
   <img src="image/sqlprompt_demo.png" height="100" />
 </p>
 
@@ -52,8 +52,8 @@ bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL gene
 bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - SQL generation and abstention through demonstrations
 ```
 
-<p align="middle" float="middle">
-  <img src="image/sqlprompt_voting.png" height="100" />
+<p align="left" float="middle">
+  <img src="image/sqlprompt_voting.png" height="150" />
 </p>
 
 ```
