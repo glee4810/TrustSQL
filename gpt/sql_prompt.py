@@ -71,7 +71,7 @@ if __name__ == '__main__':
         feasible_index = create_index(feasible_pool, retriever)
         if args.neg_num_sample > 0:
             infeasible_pool = [sample['question'].capitalize() for sample in data_pool if sample['query'] == 'null']
-            infeasible_index = create_index(feasible_pool, retriever)
+            infeasible_index = create_index(infeasible_pool, retriever)
 
         singledb_prompt_to_run = create_schema_prompt(data_pool[0]['db_id'], db_schema, primary_key, foreign_key, args.data_pool_dir)
         singledb_prompt_to_run += task_prompt

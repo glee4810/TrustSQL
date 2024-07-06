@@ -42,13 +42,6 @@ def prepare_data_pool(data_pool_dir):
     data_pool = [item for sublist in [load_json(os.path.join(data_pool_dir, file)) for file in data_pool_files] for item in sublist]
     return data_pool
 
-def create_indices(data_pool, retriever):
-    feasible_pool = [sample['question'] for sample in data_pool if sample['query'] != 'null']
-    feasible_index = create_index(feasible_pool, retriever)
-    infeasible_pool = [sample['question'].capitalize() for sample in data_pool if sample['query'] == 'null']
-    infeasible_index = create_index(infeasible_pool, retriever)
-    return feasible_pool, feasible_index, infeasible_pool, infeasible_index
-
 if __name__ == '__main__':
     args = parse_args()
 
