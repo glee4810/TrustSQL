@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from openai import OpenAI
-from prompt_utils import load_json, save_json, load_cache_files, adjust_case, create_schema, find_fields_mysql_like, find_foreign_keys_mysql_like, find_primary_keys_mysql_like, create_index, run_engine
+from prompt_utils import load_json, save_json, load_cache_files, adjust_case, create_schema, find_fields_mysql_like, find_foreign_keys_mysql_like, find_primary_keys_mysql_like
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Script for filtering out error in model outputs.")

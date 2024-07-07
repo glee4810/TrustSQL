@@ -9,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 from openai import OpenAI
 from collections import defaultdict
-from prompt_utils import load_json, save_json, load_cache_files, adjust_case, get_prompt_template, create_schema, create_index, run_engine, create_retrievers
+from prompt_utils import load_json, save_json, load_cache_files, adjust_case, get_prompt_template, create_schema, create_index, create_retrievers
 from sentence_transformers import SentenceTransformer
 
 FEASIBLE_LABEL = 'answerable'

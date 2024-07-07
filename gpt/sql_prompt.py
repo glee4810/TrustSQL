@@ -7,7 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 from openai import OpenAI
 from collections import defaultdict
-from prompt_utils import load_json, save_json, load_cache_files, adjust_case, prepare_data_pool, get_prompt_template, create_schema, create_index, run_engine, create_retrievers
+from prompt_utils import load_json, save_json, load_cache_files, adjust_case, prepare_data_pool, get_prompt_template, create_schema, create_index, create_retrievers
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Script for generating SQL prompts and executing inference.")
@@ -30,11 +30,6 @@ def parse_args():
     parser.add_argument('--enable_batchapi', action='store_true', help='Use batch API')
     parser.add_argument('--get_length_only', action='store_true', help='Get token lengths only')
     return parser.parse_args()
-
-def prepare_data_pool(data_pool_dir):
-    data_pool_files = [f for f in os.listdir(data_pool_dir) if '_train_combined_subset.json' in f or '_valid_combined_subset.json' in f]
-    data_pool = [item for sublist in [load_json(os.path.join(data_pool_dir, file)) for file in data_pool_files] for item in sublist]
-    return data_pool
 
 if __name__ == '__main__':
     args = parse_args()
