@@ -154,7 +154,7 @@ def adjust_case(df):
     return df.applymap(lambda x: x.lower() if pd.notnull(x) and isinstance(x, str) else x)
 
 def prepare_data_pool(data_pool_dir):
-    data_pool_files = [f for f in os.listdir(data_pool_dir) if '_train_combined_subset.json' in f or '_valid_combined_subset.json' in f]
+    data_pool_files = [f for f in os.listdir(data_pool_dir) if '_train.json' in f or '_valid_combined_subset.json' in f]
     data_pool = [item for sublist in [load_json(os.path.join(data_pool_dir, file)) for file in data_pool_files] for item in sublist]
     return data_pool
 
