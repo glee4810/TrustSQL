@@ -17,7 +17,7 @@ The benchmark data is released along with our paper [TrustSQL: Benchmarking Text
   <img src="image/demo.png" height="300" />
 </p>
 
-Please check out our [demo page](http://3.35.140.88:8501) for an interactive experience of the TrustSQL benchmark. It is important to note that the model used for this demo still makes mistakes in SQL generation. The goal of the TrustSQL benchmark is to remove these mistakes by allowing models to selectively generate only correct SQL among any input questions.
+Please check out our [demo page](https://trustsqlapp-2gmvmktqkar8fzcyvwyj9k.streamlit.app/) for an interactive experience of the TrustSQL benchmark. It is important to note that the model used for this demo still makes mistakes in SQL generation. The goal of the TrustSQL benchmark is to remove these mistakes by allowing models to selectively generate only correct SQL among any input questions.
 
 
 ## Dataset
