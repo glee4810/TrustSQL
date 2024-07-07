@@ -35,8 +35,6 @@ def apply_post_abstention(prediction, post_abst_path):
 def apply_abstention_within_sql_demo(prediction):
     print('Abstention demo applied!')
     for key, pred in prediction.items():
-        if isinstance(pred, list):
-            prediction[key] = prediction[key][0]
         if isinstance(pred, str) and 'not_answerable' in pred.lower():
             prediction[key] = 'null'
     return prediction
@@ -56,6 +54,10 @@ def main(args):
 
     if args.pre_abst_path:
         prediction = apply_pre_abstention(prediction, args.pre_abst_path)
+
+    for key, pred in prediction.items():
+        if isinstance(pred, list) and len(pred)==1:
+            prediction[key] = prediction[key][0]
 
     if 'demo' in args.pred_file:
         prediction = apply_abstention_within_sql_demo(prediction)
