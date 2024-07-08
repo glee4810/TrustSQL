@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, 'spider_eval')
 from parse import remove_distinct
 
+import os
 import re
 import argparse
 import numpy as np
@@ -73,7 +74,7 @@ def postprocess_pred(query, db_id):
     '''
     Postprocessing for predicted SQL. Modify if necessary.
     '''
-    
+
     if 'select' not in query.lower(): # remove non-select queries
         return 'null'
 
@@ -119,6 +120,7 @@ def main(args):
 
     # process abstention
     if args.pre_abst_path:
+        assert os.path.exists(args.pre_abst_path)
         prediction = apply_pre_abstention(prediction, args.pre_abst_path)
 
     if 'demo' in args.pred_file:
@@ -128,6 +130,7 @@ def main(args):
         prediction = apply_abstention_within_sql_voting(prediction)
 
     if args.post_abst_path:
+        assert os.path.exists(args.post_abst_path)
         prediction = apply_post_abstention(prediction, args.post_abst_path)
 
     save_json(prediction, args.save_file)
