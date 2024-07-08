@@ -1,10 +1,10 @@
-import json
+'''
+Official Evaluation Script for TrustSQL v1.0
+'''
+
 import argparse
-import numpy as np
-import pandas as pd
 from scoring_utils import *
 import multiprocessing as mp
-from collections import Counter
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate predictions with penalty.")
@@ -23,7 +23,7 @@ def main(args):
     num_workers = mp.cpu_count() if args.num_workers == -1 else args.num_workers
 
     # Infer dataset name
-    dataset = infer_dataset(args.db_path)
+    db_id = get_db_id(args.db_path)
     
     # Load data
     data = load_json(args.data_file)
@@ -33,7 +33,7 @@ def main(args):
     real_dict, pred_dict, real_result, pred_result, db_dict, type_dict, nlq_dict, temp_dict = execute_queries(data, prediction, args.db_path, num_workers, args.timeout)
 
     # Evaluate
-    _, score_dict = reliability_score(real_result, pred_result, dataset=dataset, return_dict=True, label=real_dict)
+    _, score_dict = reliability_score(real_result, pred_result, db_id=db_id, return_dict=True, label=real_dict)
     result_dict = initialize_result_dicts()
 
     # Collect results

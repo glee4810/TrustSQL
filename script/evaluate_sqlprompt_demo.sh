@@ -1,6 +1,7 @@
 # ATIS
 echo "ATIS"
 python postprocess_abstention.py \
+    --db_path ./dataset/atis/atis.sqlite \
     --pred_file ./outputs/eval_atis_test_chatgpt_colfk_pos8neg8_demo/prediction.json \
     --save_file ./outputs/eval_atis_test_chatgpt_colfk_pos8neg8_demo/model_decision.json
 python evaluate.py \
@@ -11,6 +12,7 @@ python evaluate.py \
 # Advising
 echo "Advising"
 python postprocess_abstention.py \
+    --db_path ./dataset/advising/advising.sqlite \
     --pred_file ./outputs/eval_advising_test_chatgpt_colfk_pos8neg8_demo/prediction.json \
     --save_file ./outputs/eval_advising_test_chatgpt_colfk_pos8neg8_demo/model_decision.json
 python evaluate.py \
@@ -21,6 +23,7 @@ python evaluate.py \
 # EHRSQL
 echo "EHRSQL"
 python postprocess_abstention.py \
+    --db_path ./dataset/ehrsql/mimic_iv.sqlite \
     --pred_file ./outputs/eval_ehrsql_test_chatgpt_colfk_pos8neg8_demo/prediction.json \
     --save_file ./outputs/eval_ehrsql_test_chatgpt_colfk_pos8neg8_demo/model_decision.json
 python evaluate.py \
@@ -31,6 +34,7 @@ python evaluate.py \
 # Spider
 echo "Spider"
 python postprocess_abstention.py \
+    --db_path ./dataset/spider/database \
     --pred_file ./outputs/eval_spider_test_chatgpt_colfk_pos8neg8_demo/prediction.json \
     --save_file ./outputs/eval_spider_test_chatgpt_colfk_pos8neg8_demo/model_decision.json
 python evaluate.py \

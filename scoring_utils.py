@@ -34,23 +34,17 @@ def add_distinct(pred, real):
         pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:]
     return ''.join(pred_toks)
 
-def post_process_sql(query, db_id):
-    query = query.replace('```sql', '').replace('```', '') # function calling filtering
-    query = query.replace('> =', '>=').replace('< =', '<=').replace('! =', '!=') # tokenization adjustment for T5
-    query = re.sub('[ ]+', ' ', query.replace('\n', ' ')).strip() 
-
-    if 'select' not in query.lower(): # remove non-select queries
-        return 'null'
-    
+def postprocess_gt(query, db_id):
+    '''
+    Postprocessing for ground-truth SQL
+    '''
     if db_id not in ['atis', 'advising', 'mimic_iv'] and query != 'null': # spider adjustment
         query = remove_distinct(query)
 
     if db_id == 'mimic_iv':
-        if "current_time" in query:
+        if "current_time" in query: # strftime('%J',current_time) => strftime('%J','2100-12-31 23:59:00')
             query = query.replace("current_time", f"'{CURRENT_TIME}'")
-        if "'now'" in query:
-            query = query.replace("'now'", f"'{__current_time}'")
-        if re.search('[ \n]+([a-zA-Z0-9_]+_lower)', query) and re.search('[ \n]+([a-zA-Z0-9_]+_upper)', query):
+        if re.search('[ \n]+([a-zA-Z0-9_]+_lower)', query) and re.search('[ \n]+([a-zA-Z0-9_]+_upper)', query): # systolic_bp_lower => 90.0
             vital_lower_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_lower)', query)[0]
             vital_upper_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_upper)', query)[0]
             vital_name_list = list(set(re.findall('([a-zA-Z0-9_]+)_lower', vital_lower_expr) + re.findall('([a-zA-Z0-9_]+)_upper', vital_upper_expr)))
@@ -59,7 +53,7 @@ def post_process_sql(query, db_id):
                 if processed_vital_name in PRECOMPUTED_DICT:
                     vital_range = PRECOMPUTED_DICT[processed_vital_name]
                     query = query.replace(vital_lower_expr, f"{vital_range[0]}").replace(vital_upper_expr, f"{vital_range[1]}")
-        query = query.replace("%y", "%Y").replace('%j', '%J')
+        query = query.replace("%y", "%Y").replace('%j', '%J') # strftime('%y-%m',outputevents.charttime) => strftime('%Y-%m',outputevents.charttime)
 
     return query
 
@@ -172,9 +166,7 @@ def execute_all_distributed(dict, db_path, db_dict, tag, num_workers, timeout=No
     pool.join()
     return exec_result
 
-def reliability_score(real_result, pred_result, dataset, return_dict=False, label=False):
-
-    assert dataset in ['atis', 'advising', 'ehrsql', 'spider']
+def reliability_score(real_result, pred_result, db_id, return_dict=False, label=False):
 
     reliablity_score = []
     reliablity_score_dict = {}
@@ -183,7 +175,7 @@ def reliability_score(real_result, pred_result, dataset, return_dict=False, labe
         ans_pred = pred_result[key]
 
         if ans_pred != "[['error_pred']]":
-            if ans_pred != 'null' and dataset in ['atis', 'advising', 'ehrsql'] and label:
+            if ans_pred != 'null' and db_id in ['atis', 'advising', 'mimic_iv'] and label:
                 is_count = 'count' in label[key].lower() # count( * )
                 if is_count and ans_pred=='[]':
                     ans_pred = str([['0.0']])
@@ -196,7 +188,7 @@ def reliability_score(real_result, pred_result, dataset, return_dict=False, labe
                     elif ans_pred not in [[['0.0']], [['1.0']]]:
                         ans_pred = [[f'{len(ans_pred)}.0']]
                     ans_pred = str(ans_pred)
-            if dataset == 'spider' and label:
+            if db_id not in ['atis', 'advising', 'mimic_iv'] and label:
                 order_matters = 'order by' in label[key].lower()
                 exec_acc = result_eq(ans_real, ans_pred, order_matters=order_matters)
             else:
@@ -242,17 +234,15 @@ def initialize_result_dicts():
 
     return reliablity_dict
 
-def infer_dataset(db_path):
-    if 'spider' in db_path:
-        return 'spider'
-    elif 'atis' in db_path:
+def get_db_id(db_path):
+    if 'atis' in db_path:
         return 'atis'
     elif 'advising' in db_path:
         return 'advising'
     elif 'ehrsql' in db_path or 'mimic_iv' in db_path:
-        return 'ehrsql'
+        return 'mimic_iv'
     else:
-        NotImplementedError
+        return 'others'
 
 def update_result_dicts(result_dict, key, q_real, q_pred, ans_real, ans_pred, exec_acc, type_key):
     
@@ -276,8 +266,8 @@ def update_result_dicts(result_dict, key, q_real, q_pred, ans_real, ans_pred, ex
 def prepare_query_dicts(data, prediction):
     real_dict, pred_dict, db_dict, type_dict, nlq_dict, temp_dict = {}, {}, {}, {}, {}, {}
     for line in data:
-        real = post_process_sql(line['query'], db_id=line['db_id'])
-        pred = post_process_sql(prediction[line['id']], db_id=line['db_id'])
+        real = postprocess_gt(line['query'], db_id=line['db_id'])
+        pred = prediction[line['id']]
         if line['db_id'] in ['atis', 'advising', 'mimic_iv']: # adjustment for models with no in-domain examples
             pred = add_distinct(pred, real)
 
