@@ -48,6 +48,8 @@ def post_process_sql(query, db_id):
     if db_id == 'mimic_iv':
         if "current_time" in query:
             query = query.replace("current_time", f"'{CURRENT_TIME}'")
+        if "'now'" in query:
+            query = query.replace("'now'", f"'{__current_time}'")
         if re.search('[ \n]+([a-zA-Z0-9_]+_lower)', query) and re.search('[ \n]+([a-zA-Z0-9_]+_upper)', query):
             vital_lower_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_lower)', query)[0]
             vital_upper_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_upper)', query)[0]
