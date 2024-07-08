@@ -277,7 +277,7 @@ def prepare_query_dicts(data, prediction):
         type_dict[line['id']] = f"{line['type']}:{line['note']}"
         nlq_dict[line['id']] = line['question']
         temp_dict[line['id']] = line['template']
-    
+
     return real_dict, pred_dict, db_dict, type_dict, nlq_dict, temp_dict
 
 def execute_queries(data, prediction, db_path, num_workers, timeout):
@@ -301,9 +301,9 @@ def print_results(result_dict, data_length, ndigits):
     print('======================================    RS    =====================================')
     for c in penalties:
         print("{:>20} {:>20} {:>20} {:>20}".format(f'RS({c})', 
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for v in result_dict['total']])), 
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if '-sql' in key for v in value])),
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'inf' in key for v in value]))))
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for v in result_dict['total']]), ndigits),
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if '-sql' in key for v in value]), ndigits),
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'inf' in key for v in value])), ndigits))
     print()
 
 def save_error_analysis(args, data_id, db_ids, types, questions, templates, query_real, query_pred, exec_real, exec_pred, query_correct_list, exec_correct_list):

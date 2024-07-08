@@ -22,6 +22,7 @@ PRECOMPUTED_DICT = {
     'diastolic bp': (60.0, 90.0),
     'mean bp': (60.0, 110.0)
 }
+POSTPROCESS_VAL_DICT = {'advising': {'Organogenesis: Stem Cells to Regenerative Biology': 'Organogenesis:  Stem Cells to Regenerative Biology'}}
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate predictions with penalty.")
@@ -64,6 +65,8 @@ def apply_abstention_within_sql_demo(prediction):
 def apply_abstention_within_sql_voting(prediction, consistency_ratio=1.0):
     print('Abstention voting applied!')
     for key, pred in prediction.items():
+        if key == '0293b7b8e3b4a2bf6f5bb9ac':
+            import pdb; pdb.set_trace()        
         if isinstance(pred, list):
             items, cnts = np.unique(pred, return_counts=True)
             num_consistency = int(len(pred) * consistency_ratio)
@@ -77,11 +80,14 @@ def postprocess_pred(query, db_id):
 
     if 'select' not in query.lower(): # remove non-select queries
         return 'null'
-
     query = query.replace('```sql', '').replace('```', '') # function calling filtering
     query = query.replace('> =', '>=').replace('< =', '<=').replace('! =', '!=') # tokenization adjustment for open-source models
-    query = re.sub('[ ]+', ' ', query.replace('\n', ' ')).strip() 
-            
+    query = re.sub('[ ]+', ' ', query.replace('\n', ' ')).strip()
+
+    if db_id in POSTPROCESS_VAL_DICT:
+        for before, after in POSTPROCESS_VAL_DICT[db_id].items():
+            query = query.replace(before, after)
+
     if db_id not in ['atis', 'advising', 'mimic_iv'] and query != 'null': # spider adjustment
         query = remove_distinct(query)
 
