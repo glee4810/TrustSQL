@@ -8,8 +8,8 @@ import multiprocessing as mp
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate predictions with penalty.")
-    parser.add_argument('--data_file', metavar='data.json', required=True, help='Input data JSON file')
-    parser.add_argument('--pred_file', metavar='pred.json', required=True, help='Model predictions')
+    parser.add_argument('--data_file', required=True, help='Input data JSON file')
+    parser.add_argument('--pred_file', required=True, help='Model predictions')
     parser.add_argument('--db_path', required=True, type=str, help='Path to database')
     parser.add_argument("--num_workers", type=int, default=-1, help='Number of workers for multiprocessing')
     parser.add_argument("--timeout", type=int, default=60, help='Execution time limit in seconds')
