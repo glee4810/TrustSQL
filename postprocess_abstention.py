@@ -65,8 +65,6 @@ def apply_abstention_within_sql_demo(prediction):
 def apply_abstention_within_sql_voting(prediction, consistency_ratio=1.0):
     print('Abstention voting applied!')
     for key, pred in prediction.items():
-        if key == '0293b7b8e3b4a2bf6f5bb9ac':
-            import pdb; pdb.set_trace()        
         if isinstance(pred, list):
             items, cnts = np.unique(pred, return_counts=True)
             num_consistency = int(len(pred) * consistency_ratio)
