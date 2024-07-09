@@ -35,7 +35,7 @@ The TrustSQL benchmark can be addressed using two approaches: pipeline-based and
 
 ### Pipeline-based Approach
 
-1) CLS<sub>P</sub> → SQLPROMPT → ERROR<sub>P</sub>
+1) CLS<sub>P</sub> → SQLPROMPT → ERROR<sub>P</sub> (referred to as SQLPipeline)
 
 <p align="left" float="middle">
   <img src="image/pipeline.png" height="120" />
@@ -75,7 +75,7 @@ bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and a
 To evaluate the model performance, run the following code:
 
 ```
-# 1) CLS_P → SQLPROMPT → ERROR_P
+# 1) SQLPipeline
 bash script/evaluate_sqlprompt_cls+error.sh
 ```
 
@@ -88,6 +88,84 @@ bash script/evaluate_sqlprompt_demo.sh
 # 3) SQLPROMPT[Voting]
 bash script/evaluate_sqlprompt_voting.sh
 ```
+
+## Result
+
+<table>
+  <tr>
+    <th style="text-align: center;">Model</th>
+    <th colspan="4" style="text-align: center;">RS(0)</th>
+    <th colspan="4" style="text-align: center;">RS(10)</th>
+    <th colspan="4" style="text-align: center;">RS(N)</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td style="text-align: center;">ATIS</td>
+    <td style="text-align: center;">Advising</td>
+    <td style="text-align: center;">EHRSQL</td>
+    <td style="text-align: center;">Spider</td>
+    <td style="text-align: center;">ATIS</td>
+    <td style="text-align: center;">Advising</td>
+    <td style="text-align: center;">EHRSQL</td>
+    <td style="text-align: center;">Spider</td>
+    <td style="text-align: center;">ATIS</td>
+    <td style="text-align: center;">Advising</td>
+    <td style="text-align: center;">EHRSQL</td>
+    <td style="text-align: center;">Spider</td>
+  </tr>
+  <tr>
+    <td style="text-align: center;">SQLPipeline</td>
+    <td style="text-align: center;">54.5</td>
+    <td style="text-align: center;">58.9</td>
+    <td style="text-align: center;">57.4</td>
+    <td style="text-align: center;">67.6</td>
+    <td style="text-align: center;">51.4</td>
+    <td style="text-align: center;">45.8</td>
+    <td style="text-align: center;">47.3</td>
+    <td style="text-align: center;">-41.5</td>
+    <td style="text-align: center;">-245.5</td>
+    <td style="text-align: center;">-1.3K</td>
+    <td style="text-align: center;">-1.8K</td>
+    <td style="text-align: center;">-11.4K</td>
+  </tr>
+  <tr>
+    <td style="text-align: center;">SQLPROMPT[Demo]</td>
+    <td style="text-align: center;">73.4</td>
+    <td style="text-align: center;">70.4</td>
+    <td style="text-align: center;">69.5</td>
+    <td style="text-align: center;">66.8</td>
+    <td style="text-align: center;">-190.2</td>
+    <td style="text-align: center;">-226.1</td>
+    <td style="text-align: center;">-231.9</td>
+    <td style="text-align: center;">-265.3</td>
+    <td style="text-align: center;">-25.0K</td>
+    <td style="text-align: center;">-31.5K</td>
+    <td style="text-align: center;">-56.2K</td>
+    <td style="text-align: center;">-34.9K</td>
+  </tr>
+  <tr>
+    <td style="text-align: center;">SQLPROMPT[Voting]*</td>
+    <td style="text-align: center;">76.5</td>
+    <td style="text-align: center;">73.7</td>
+    <td style="text-align: center;">78.8</td>
+    <td style="text-align: center;">51.0</td>
+    <td style="text-align: center;">42.9</td>
+    <td style="text-align: center;">39.0</td>
+    <td style="text-align: center;">37.0</td>
+    <td style="text-align: center;">23.5</td>
+    <td style="text-align: center;">-3.1K</td>
+    <td style="text-align: center;">-3.6K</td>
+    <td style="text-align: center;">-7.7K</td>
+    <td style="text-align: center;">-2.8K</td>
+  </tr>
+</table>
+
+- RS(0): No penalty for incorrect SQL generation
+- RS(10): A penalty of 10 is applied; 1 incorrect SQL weighs the same as 10 correct model decisions (i.e., correct SQL for feasible questions and abstention for infeasible questions)
+- RS(N): A penalty of N (size of eval data) is applied; 1 incorrect SQL outweighs the rest of model decisions being all correct
+
+\*New results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting)
+
 
 
 ## Have Questions?
