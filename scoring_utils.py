@@ -14,7 +14,9 @@ import multiprocessing as mp
 from parse import remove_distinct
 from exec_eval import result_eq
 
-CURRENT_TIME = "2100-12-31 23:59:00"
+CURRENT_DATE = "2100-12-31"
+CURRENT_TIME = "23:59:00"
+NOW = f"{CURRENT_DATE} {CURRENT_TIME}"
 PRECOMPUTED_DICT = {
     'temperature': (35.5, 38.1),
     'sao2': (95.0, 100.0),
@@ -43,7 +45,7 @@ def postprocess_gt(query, db_id):
 
     if db_id == 'mimic_iv':
         if "current_time" in query: # strftime('%J',current_time) => strftime('%J','2100-12-31 23:59:00')
-            query = query.replace("current_time", f"'{CURRENT_TIME}'")
+            query = query.replace("current_time", f"'{NOW}'")
         if re.search('[ \n]+([a-zA-Z0-9_]+_lower)', query) and re.search('[ \n]+([a-zA-Z0-9_]+_upper)', query): # systolic_bp_lower => 90.0
             vital_lower_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_lower)', query)[0]
             vital_upper_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_upper)', query)[0]

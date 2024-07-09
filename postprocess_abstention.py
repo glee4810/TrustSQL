@@ -12,7 +12,9 @@ import argparse
 import numpy as np
 from scoring_utils import load_json, save_json, get_db_id
 
-CURRENT_TIME = "2100-12-31 23:59:00"
+CURRENT_DATE = "2100-12-31"
+CURRENT_TIME = "23:59:00"
+NOW = f"{CURRENT_DATE} {CURRENT_TIME}"
 PRECOMPUTED_DICT = {
     'temperature': (35.5, 38.1),
     'sao2': (95.0, 100.0),
@@ -22,6 +24,7 @@ PRECOMPUTED_DICT = {
     'diastolic bp': (60.0, 90.0),
     'mean bp': (60.0, 110.0)
 }
+TIME_PATTERN = r"(DATE_SUB|DATE_ADD)\((\w+\(\)|'[^']+')[, ]+ INTERVAL (\d+) (MONTH|YEAR|DAY)\)"
 POSTPROCESS_VAL_DICT = {'advising': {'Organogenesis: Stem Cells to Regenerative Biology': 'Organogenesis:  Stem Cells to Regenerative Biology'}}
 
 def parse_args():
@@ -71,16 +74,65 @@ def apply_abstention_within_sql_voting(prediction, consistency_ratio=1.0):
             prediction[key] = next((item for item, cnt in zip(items, cnts) if cnt >= num_consistency), 'null')
     return prediction
 
+def convert_date_function(match):
+    function = match.group(1)
+    date = match.group(2)
+    number = match.group(3)
+    unit = match.group(4).lower()
+    
+    # Use singular form when number is 1
+    if number == '1':
+        unit = unit.rstrip('s')
+    else:
+        unit += 's' if not unit.endswith('s') else ''
+    
+    # Determine the sign based on the function (DATE_SUB or DATE_ADD)
+    sign = '-' if function == 'DATE_SUB' else '+'
+    
+    return f"datetime({date}, '{sign}{number} {unit}')"
+
+def extract_sql_strings(sql):
+    pattern = r"'([^']*(?:''[^']*)*)'|\"([^\"]*(?:\"\"[^\"]*)*)\""
+    matches = re.findall(pattern, sql)
+    extracted = [item for match in matches for item in match if item]    
+    return extracted
+
+def normalize_sql_spacing(query):
+    
+    values = extract_sql_strings(query)
+    for idx, val in enumerate(values):
+        query = query.replace(val, f'__PLACEHOLDER{idx}__')
+    
+    # postprocess remove spaces around brackets
+    query = re.sub(r'\s*\(\s*', '(', query)
+    query = re.sub(r'\s*\)\s*', ')', query)
+    query = re.sub(r'\s*,\s*', ', ', query)
+    
+    for idx, val in enumerate(values):
+        query = query.replace(f'__PLACEHOLDER{idx}__', val)
+    
+    return query.strip()
+
 def postprocess_pred(query, db_id):
     '''
     Postprocessing for predicted SQL. Modify if necessary.
     '''
-
     if 'select' not in query.lower(): # remove non-select queries
         return 'null'
+    
     query = query.replace('```sql', '').replace('```', '') # function calling filtering
     query = query.replace('> =', '>=').replace('< =', '<=').replace('! =', '!=') # tokenization adjustment for open-source models
     query = re.sub('[ ]+', ' ', query.replace('\n', ' ')).strip()
+
+    # postprocess string literals
+    if db_id in ['atis', 'advising']: # => "
+        pattern = r"'([^']*)'"
+        query = re.sub(pattern, r'"\1"', query)
+    else: # => '
+        pattern = r'"([^\']*)"'
+        query = re.sub(pattern, r"'\1'", query)
+
+    query = normalize_sql_spacing(query)
 
     if db_id in POSTPROCESS_VAL_DICT:
         for before, after in POSTPROCESS_VAL_DICT[db_id].items():
@@ -90,10 +142,21 @@ def postprocess_pred(query, db_id):
         query = remove_distinct(query)
 
     if db_id == 'mimic_iv':
+
+        # Convert MySQL to SQLite functions
+        query = re.sub(TIME_PATTERN, convert_date_function, query)
+
         if "current_time" in query: # strftime('%J',current_time) => strftime('%J','2100-12-31 23:59:00')
-            query = query.replace("current_time", f"'{CURRENT_TIME}'")
-        if "'now'" in query: # 'now' => "2100-12-31 23:59:00"
-            query = query.replace("'now'", f"'{CURRENT_TIME}'")
+            query = query.replace("current_time", f"'{NOW}'")
+        if "'now'" in query: # 'now' => '2100-12-31 23:59:00'
+            query = query.replace("'now'", f"'{NOW}'")
+        if "NOW()" in query: # NOW() => '2100-12-31 23:59:00'
+            query = query.replace("NOW()", f"'{NOW}'")
+        if "CURDATE()" in query: # CURDATE() => '2100-12-31'
+            query = query.replace("CURDATE()", f"'{CURRENT_DATE}'")
+        if "CURTIME()" in query: # CURTIME() => '23:59:00'
+            query = query.replace("CURTIME()", f"'{CURRENT_TIME}'")
+
         if re.search('[ \n]+([a-zA-Z0-9_]+_lower)', query) and re.search('[ \n]+([a-zA-Z0-9_]+_upper)', query): # systolic_bp_lower => 90.0
             vital_lower_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_lower)', query)[0]
             vital_upper_expr = re.findall('[ \n]+([a-zA-Z0-9_]+_upper)', query)[0]
