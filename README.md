@@ -42,9 +42,9 @@ The TrustSQL benchmark can be addressed using two approaches: pipeline-based and
 </p>
 
 ```
-bash ./script/run_clsprompt.sh # CLS_Prompt - Pre-abstention before SQL generation (i.e., filtering out infeasible questions)
-bash ./script/run_sqlprompt.sh # SQLPrompt - SQL generation
-bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL generation (i.e., filtering out incorrect SQL outputs)
+bash ./script/run_clsprompt.sh # CLS_Prompt - Pre-abstention before SQL generation using gpt4o (i.e., filtering out infeasible questions)
+bash ./script/run_sqlprompt.sh # SQLPrompt - SQL generation using gpt-3.5-turbo
+bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL generation using gpt4o (i.e., filtering out incorrect SQL outputs)
 ```
 
 ### Unified Approach
@@ -56,7 +56,7 @@ bash ./script/run_errorprompt.sh # Error_Prompt - Post-abstention after SQL gene
 </p>
 
 ```
-bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - SQL generation and abstention through demonstrations
+bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - SQL generation and abstention using gpt-3.5-turbo through demonstrations
 ```
 
 3) SQLPROMPT[Voting]
@@ -66,7 +66,7 @@ bash ./script/run_sqlprompt_demo.sh # SQLPrompt[Demo] - SQL generation and abste
 </p>
 
 ```
-bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and abstention through voting 5 sampled outputs
+bash ./script/run_sqlprompt_voting.sh # SQLPrompt[Voting] - SQL generation and abstention using gpt-3.5-turbo through voting 5 sampled outputs
 ```
 
 
