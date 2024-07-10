@@ -95,27 +95,27 @@ bash script/evaluate_sqlprompt_voting.sh
 
 | Model                | ATIS    | Advising | EHRSQL   | Spider   |
 |:---------------------|:-------:|:--------:|:--------:|:--------:|
-| SQLPipeline          | 54.5    | 58.9     | 57.4     | 67.6     |
-| SQLPROMPT[Demo]      | 73.4    | 70.4     | 69.5     | 66.8     |
-| SQLPROMPT[Voting]*   | 76.5    | 73.7     | 78.8     | 51.0     |
+| SQLPipeline          | 54.5    | 58.9     | 57.4     | 72.6     |
+| SQLPROMPT[Demo]      | 73.4    | 70.4     | 69.5     | 67.1     |
+| SQLPROMPT[Voting]    | 76.5    | 73.7     | 78.8     | 58.3     |
 - RS(0): No penalty for incorrect SQL generation
 
 ### RS(10)
 
 | Model                | ATIS    | Advising | EHRSQL   | Spider   |
 |:---------------------|:-------:|:--------:|:--------:|:--------:|
-| SQLPipeline          | 51.4    | 45.8     | 47.3     | -41.5    |
-| SQLPROMPT[Demo]      | -190.2  | -226.1   | -231.9   | -265.3   |
-| SQLPROMPT[Voting]*   | 42.9    | 39.0     | 37.0     | 23.5     |
+| SQLPipeline          | 51.4    | 45.8     | 47.3     | 12.8     |
+| SQLPROMPT[Demo]      | -190.2  | -226.1   | -231.9   | -262.1   |
+| SQLPROMPT[Voting]    | 42.9    | 39.0     | 37.0     | 7.1      |
 - RS(10): A penalty of 10 is applied; 1 incorrect SQL weighs the same as 10 correct model decisions (i.e., correct SQL for feasible questions and correct abstention for infeasible questions)
 
 ### RS(N)
 
 | Model                | ATIS    | Advising | EHRSQL   | Spider   |
 |:---------------------|:-------:|:--------:|:--------:|:--------:|
-| SQLPipeline          | -245.5  | -1.3K    | -1.8K    | -11.4K   |
-| SQLPROMPT[Demo]      | -25.0K  | -31.5K   | -56.2K   | -34.9K   |
-| SQLPROMPT[Voting]*   | -3.1K   | -3.6K    | -7.7K    | -2.8K    |
+| SQLPipeline          | -245.5  | -1.3K    | -1.8K    | -6.2K    |
+| SQLPROMPT[Demo]      | -25.0K  | -31.5K   | -56.2K   | -34.6K   |
+| SQLPROMPT[Voting]    | -3.1K   | -3.6K    | -7.7K    | -5.3K    |
 - RS(N): A penalty of N (size of eval data) is applied; 1 incorrect SQL outweighs the rest of model decisions being all correct
 
 \*New results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting)
