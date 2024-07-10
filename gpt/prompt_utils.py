@@ -169,7 +169,7 @@ def run_engine(client, model, prompt, temperature, n):
         temperature=temperature if n > 1 else 0.0,
         n=n,
         max_tokens=512,
-        stop=["#", ";"]
+        stop=["#", ";", "Question:"]
     )
     return [choice.message.content.strip() for choice in response.choices] if n > 1 else response.choices[0].message.content.strip()
 
@@ -185,7 +185,7 @@ def handle_batch_api(client, args, prompts):
                 "model": args.model,
                 "messages": [{"role": "user", "content": prompts[id_]}],
                 "max_tokens": 512,
-                "stop": ["#", ";"],
+                "stop": ["#", ";", "Question:"],
                 "temperature": args.temp,
                 "n": args.n
             }
