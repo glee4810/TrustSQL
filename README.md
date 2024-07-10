@@ -118,7 +118,7 @@ bash script/evaluate_sqlprompt_voting.sh
 | SQLPROMPT[Voting]    | -3.1K   | -3.6K    | -7.7K    | -5.3K    |
 - RS(N): A penalty of N (size of eval data) is applied; 1 incorrect SQL outweighs the rest of model decisions being all correct
 
-\*New results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting)
+\*These are new results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting)
 
 
 ## Have Questions?
