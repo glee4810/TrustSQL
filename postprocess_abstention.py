@@ -72,12 +72,12 @@ def apply_abstention_within_sql_voting(prediction, consistency_ratio=1.0):
             items, cnts = np.unique(pred, return_counts=True)
             # items, cnts = np.unique([p.lower() for p in pred], return_counts=True) # not used due to lower performance when the penality increases in RS            
             num_consistency = int(len(pred) * consistency_ratio)
-            pred = 'null'
-            for item, cnt in zip(items, cnts):
+            temp = 'null'
+            for idx, cnt in enumerate(cnts):
                 if cnt >= num_consistency:
-                    pred = item
+                    temp = pred[idx]
                     break
-            prediction[key] = pred
+            prediction[key] = temp
     return prediction
 
 def convert_date_function(match):
