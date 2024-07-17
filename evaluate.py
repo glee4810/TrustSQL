@@ -30,10 +30,10 @@ def main(args):
     prediction = load_json(args.pred_file)
 
     # Execute SQL
-    real_dict, pred_dict, real_result, pred_result, db_dict, type_dict, nlq_dict, temp_dict = execute_queries(data, prediction, args.db_path, num_workers, args.timeout)
+    real_sql_dict, pred_sql_dict, real_ans_dict, pred_ans_dict, db_dict, type_dict, nlq_dict, temp_dict = execute_queries(data, prediction, args.db_path, num_workers, args.timeout)
 
     # Evaluate
-    _, score_dict = reliability_score(real_result, pred_result, db_id=db_id, return_dict=True, label=real_dict)
+    _, score_dict = reliability_score(real_ans_dict, pred_ans_dict, gt_sql_dict=real_sql_dict, db_id=db_id, return_sample_dict=True)
     result_dict = initialize_result_dicts()
 
     # Collect results
@@ -41,8 +41,8 @@ def main(args):
     query_real, query_pred, exec_real, exec_pred = [], [], [], []
     query_correct_list, exec_correct_list = [], []
     for key, score in score_dict.items():
-        q_real, q_pred = real_dict[key], pred_dict[key]
-        ans_real, ans_pred = real_result[key], pred_result[key]
+        q_real, q_pred = real_sql_dict[key], pred_sql_dict[key]
+        ans_real, ans_pred = real_ans_dict[key], pred_ans_dict[key]
         exec_acc = (score == 1)
         data_id.append(key)
         db_ids.append(db_dict[key])

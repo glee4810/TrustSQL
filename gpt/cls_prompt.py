@@ -19,7 +19,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Script for filtering out infeasible input questions.")
     parser.add_argument('--api_key_path', default='OPENAI_API_KEY.json', type=str, help='Path for OpenAI API key')
     parser.add_argument('--model', default='gpt-4o', type=str, help='Model name')
-    parser.add_argument('--prompt_path', default='', type=str, help='Path for prompt')
     parser.add_argument('--data_pool_dir', required=True, type=str, help='Directory for data pool')
     parser.add_argument('--test_data_path', required=True, type=str, help='Evaluation data path')
     parser.add_argument('--pos_num_sample', default=8, type=int, help='Number of positive samples for the prompt')

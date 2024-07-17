@@ -12,7 +12,7 @@ import pandas as pd
 from func_timeout import func_timeout, FunctionTimedOut
 import multiprocessing as mp
 from parse import remove_distinct
-from exec_eval import result_eq
+from exec_eval import result_eq as spider_result_eq
 
 CURRENT_DATE = "2100-12-31"
 CURRENT_TIME = "23:59:00"
@@ -84,8 +84,8 @@ def process_item(item, db_id):
         pass
     return str(item)
 
-def process_answer(ans, db_id=None):
-    if type(ans)==str:
+def process_answer(ans, db_id):
+    if type(ans)==str: # null
         return ans
     else:
         if db_id in ['atis', 'advising', 'mimic_iv']:
@@ -168,35 +168,45 @@ def execute_all_distributed(dict, db_path, db_dict, tag, num_workers, timeout=No
     pool.join()
     return exec_result
 
-def reliability_score(real_result, pred_result, db_id, return_dict=False, label=False):
+def check_answer(real, pred, gt_sql, db_id):
+    if str(real) == 'null' or str(pred) == 'null':
+        return (str(real) == str(pred))
+    if 'error_pred' in str(pred):
+        return False
+
+    if str(real) != 'null' and isinstance(real, str):
+        real = eval(real)
+    if str(pred) != 'null' and isinstance(pred, str):
+        pred = eval(pred)
+
+    if db_id in ['atis', 'advising', 'mimic_iv']:
+        is_count = 'count' in gt_sql.lower() # count( * )
+        if is_count and pred=='[]':
+            pred = [['0.0']]
+        is_count = re.search(r'\bcount\s*\([^)]*\)\s*>\s*0\s*from\b', gt_sql.lower()) # count( * ) > 0 
+        if is_count:
+            pred = [[r] for r in np.unique(pred)]
+            if pred == [['None']]:
+                pred = [['0.0']]
+            elif pred not in [[['0.0']], [['1.0']]]:
+                pred = [[f'{len(pred)}.0']]
+        exec_acc = (real == pred)
+    else:
+        order_matters = 'order by' in gt_sql.lower()
+        exec_acc = spider_result_eq(real, pred, order_matters=order_matters)
+
+    return exec_acc
+
+def reliability_score(real_result, pred_result, gt_sql_dict, db_id, return_sample_dict=False):
 
     reliablity_score = []
     reliablity_score_dict = {}
     for key in real_result:
         ans_real = real_result[key]
         ans_pred = pred_result[key]
+        gold_sql = gt_sql_dict[key]
 
-        if ans_pred != "[['error_pred']]":
-            if ans_pred != 'null' and db_id in ['atis', 'advising', 'mimic_iv'] and label:
-                is_count = 'count' in label[key].lower() # count( * )
-                if is_count and ans_pred=='[]':
-                    ans_pred = str([['0.0']])
-                is_count = re.search(r'\bcount\s*\([^)]*\)\s*>\s*0\s*from\b', label[key].lower()) # count( * ) > 0 
-                if is_count:
-                    ans_pred = eval(ans_pred)
-                    ans_pred = [[r] for r in np.unique(ans_pred)]
-                    if ans_pred == [['None']]:
-                        ans_pred = [['0.0']]
-                    elif ans_pred not in [[['0.0']], [['1.0']]]:
-                        ans_pred = [[f'{len(ans_pred)}.0']]
-                    ans_pred = str(ans_pred)
-            if db_id not in ['atis', 'advising', 'mimic_iv'] and label:
-                order_matters = 'order by' in label[key].lower()
-                exec_acc = result_eq(ans_real, ans_pred, order_matters=order_matters)
-            else:
-                exec_acc = (ans_real == ans_pred)
-        else:
-            exec_acc = False
+        exec_acc = check_answer(ans_real, ans_pred, gt_sql=gold_sql, db_id=db_id)
 
         # x in Feasible Question; g(x)=1; Acc(x)=1
         if ans_real != 'null' and exec_acc == True:
@@ -218,7 +228,7 @@ def reliability_score(real_result, pred_result, db_id, return_dict=False, label=
         reliablity_score.append(score)
         reliablity_score_dict[key] = score
 
-    if return_dict:
+    if return_sample_dict:
         return reliablity_score, reliablity_score_dict
     else:
         return reliablity_score
