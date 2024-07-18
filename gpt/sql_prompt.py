@@ -37,7 +37,8 @@ if __name__ == '__main__':
     if os.path.exists(args.inference_result_path) and not args.get_length_only:
         raise Exception(f"Directory already exists ({args.inference_result_path})")
 
-    assert args.n > 1 and args.temp!=0.0, f"temperature must be greater than 0.0 for n={args.n}"
+    if args.n > 1:
+        assert args.temp!=0.0, f"temperature must be greater than 0.0 for n={args.n}"
     assert args.pos_num_sample % 2 == 0 and args.neg_num_sample % 2 == 0 and args.neg_num_sample in [0, args.pos_num_sample]
 
     client = OpenAI(api_key = load_json(args.api_key_path)["API_KEY"])
