@@ -13,11 +13,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Script for generating SQL prompts and executing inference.")
     parser.add_argument('--api_key_path', default='OPENAI_API_KEY.json', type=str, help='Path for OpenAI API key')
     parser.add_argument('--model', default='gpt-3.5-turbo', type=str, help='Model name')
+    parser.add_argument('--prompt_path', default='', type=str, help='Path for prompt')
     parser.add_argument('--data_pool_dir', required=True, type=str, help='Directory for data pool')
     parser.add_argument('--test_data_path', required=True, type=str, help='Evaluation data path')
     parser.add_argument('--pos_num_sample', default=8, type=int, help='Number of positive samples for the prompt')
     parser.add_argument('--neg_num_sample', default=0, type=int, help='Number of negative samples for the prompt')
-    parser.add_argument('--temp', default=0.7, type=float, help='Temperature')
+    parser.add_argument('--temp', default=0.0, type=float, help='Temperature')
     parser.add_argument('--n', default=1, type=int, help='Number of completions')
     parser.add_argument('--inference_result_path', default='./', type=str, help='Path for inference results')
     parser.add_argument('--output_file', default='prediction.json', type=str, help='Output file')
@@ -36,6 +37,7 @@ if __name__ == '__main__':
     if os.path.exists(args.inference_result_path) and not args.get_length_only:
         raise Exception(f"Directory already exists ({args.inference_result_path})")
 
+    assert args.n > 1 and args.temp!=0.0, f"temperature must be greater than 0.0 for n={args.n}"
     assert args.pos_num_sample % 2 == 0 and args.neg_num_sample % 2 == 0 and args.neg_num_sample in [0, args.pos_num_sample]
 
     client = OpenAI(api_key = load_json(args.api_key_path)["API_KEY"])
@@ -157,5 +159,3 @@ if __name__ == '__main__':
         else:
             from prompt_utils import handle_individual_api
             handle_individual_api(client, args, prompts, cache_prompt_output)
-
-
