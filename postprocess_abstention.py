@@ -119,6 +119,17 @@ def normalize_sql_spacing(query):
     
     return query.strip()
 
+def parse_function(text: str) -> str:
+    tokens = ["```json", "```sql"]
+    for token in tokens:
+        if token in text:
+            start = text.find(token) + len(token)
+            end = text.find("```", start)
+            if end == -1:
+                end = len(text)
+            return text[start:end].strip()
+    return text.strip()
+    
 def postprocess_pred(query, db_id):
     '''
     Postprocessing for predicted SQL. Modify if necessary.
@@ -126,7 +137,7 @@ def postprocess_pred(query, db_id):
     if 'select' not in query.lower(): # remove non-select queries
         return 'null'
     
-    query = query.replace('```sql', '').replace('```', '') # function calling filtering
+    query = parse_function(query)
     query = query.replace('> =', '>=').replace('< =', '<=').replace('! =', '!=') # tokenization adjustment for open-source models
     query = re.sub('[ ]+', ' ', query.replace('\n', ' ')).strip()
 
