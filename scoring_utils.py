@@ -309,12 +309,12 @@ def print_results(result_dict, data_length, ndigits):
     levels = ['total', 'feasible', 'infeasible']
     penalties = [0, 10, data_length]
     print("{:>20} {:>20} {:>20} {:>20}".format("", *levels))
-    print("{:>20} {:>20} {:>20} {:>20}".format('count', len(result_dict['total']), sum([len(value) for key, value in result_dict.items() if '-sql' in key]), sum([len(value) for key, value in result_dict.items() if 'inf' in key])))    
+    print("{:>20} {:>20} {:>20} {:>20}".format('count', len(result_dict['total']), sum([len(value) for key, value in result_dict.items() if 'seen-sql' in key or 'unseen-sql' in key]), sum([len(value) for key, value in result_dict.items() if 'inf' in key])))
     print('======================================    RS    =====================================')
     for c in penalties:
         print("{:>20} {:>20} {:>20} {:>20}".format(f'RS({c})', 
                 prettify_scores(100.0 * np.mean([v if v>0 else v*c for v in result_dict['total']]), ndigits),
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if '-sql' in key for v in value]), ndigits),
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'seen-sql' in key or 'unseen-sql' in key for v in value]), ndigits),
                 prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'inf' in key for v in value])), ndigits))
     print()
 
