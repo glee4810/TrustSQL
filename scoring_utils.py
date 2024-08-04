@@ -9,6 +9,7 @@ import sqlite3
 import sqlparse
 import numpy as np
 import pandas as pd
+from sqlglot import parse_one
 from func_timeout import func_timeout, FunctionTimedOut
 import multiprocessing as mp
 from parse import remove_distinct
@@ -29,20 +30,33 @@ PRECOMPUTED_DICT = {
 
 def add_distinct(pred, real):
 
-    if pred == 'null' or real == 'null':
+    if pred == 'null' or real == 'null' or 'select' not in pred.lower() :
         return pred
+        
+    try:
 
-    real = re.sub('[ ]+', ' ', real.replace('\n', ' ')).strip()
-    pred = re.sub('[ ]+', ' ', pred.replace('\n', ' ')).strip()
-    
-    pred_toks = [t.value for t in list(sqlparse.parse(pred)[0].flatten())]
-    real_toks = [t.value for t in list(sqlparse.parse(real)[0].flatten())]
-    if len(pred_toks) >= 3:
-        if  real_toks[2].lower() == 'distinct' and pred_toks[2].lower() != 'distinct':
-            pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:]
-        if real_toks[4].lower() == 'distinct' and pred_toks[4].lower() != 'distinct':
-            pred_toks = pred_toks[:4] + ['DISTINCT', ' '] + pred_toks[4:]
-    return ''.join(pred_toks)
+        real_pre, real_post = re.split('from', real, 1, flags=re.IGNORECASE)
+        pred_pre, pred_post = re.split('from', pred, 1, flags=re.IGNORECASE)
+
+        real_pre = parse_one(real_pre).sql()
+        pred_pre = parse_one(pred_pre).sql()
+
+        pred_toks = [t.value for t in list(sqlparse.parse(pred_pre)[0].flatten())]
+        real_toks = [t.value for t in list(sqlparse.parse(real_pre)[0].flatten())]
+
+        if len(pred_toks) >= 4:
+            if real_toks[2].lower() == 'distinct' and pred_toks[2].lower() != 'distinct':
+                pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:] + [' FROM', pred_post]
+                return ''.join(pred_toks)
+
+            if real_toks[4].lower() == 'distinct' and pred_toks[4].lower() != 'distinct':
+                pred_toks = pred_toks[:4] + ['DISTINCT', ' '] + pred_toks[4:] + [' FROM', pred_post]
+                return ''.join(pred_toks)
+            
+    except:
+        pass
+
+    return pred
 
 def postprocess_gt(query, db_id):
     '''
