@@ -28,12 +28,20 @@ PRECOMPUTED_DICT = {
 }
 
 def add_distinct(pred, real):
+
     if pred == 'null' or real == 'null':
-        return pred    
+        return pred
+
+    real = re.sub('[ ]+', ' ', real.replace('\n', ' ')).strip()
+    pred = re.sub('[ ]+', ' ', pred.replace('\n', ' ')).strip()
+    
     pred_toks = [t.value for t in list(sqlparse.parse(pred)[0].flatten())]
     real_toks = [t.value for t in list(sqlparse.parse(real)[0].flatten())]
-    if len(pred_toks) >= 3 and real_toks[2].lower() == 'distinct' and pred_toks[2].lower() != 'distinct':
-        pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:]
+    if len(pred_toks) >= 3:
+        if  real_toks[2].lower() == 'distinct' and pred_toks[2].lower() != 'distinct':
+            pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:]
+        if real_toks[4].lower() == 'distinct' and pred_toks[4].lower() != 'distinct':
+            pred_toks = pred_toks[:4] + ['DISTINCT', ' '] + pred_toks[4:]
     return ''.join(pred_toks)
 
 def postprocess_gt(query, db_id):
@@ -304,19 +312,46 @@ def execute_queries(data, prediction, db_path, num_workers, timeout):
     
     return real_dict, pred_dict, real_result, pred_result, db_dict, type_dict, nlq_dict, temp_dict
 
-def print_results(result_dict, data_length, ndigits):
+def print_results(result_dict, data_length, ndigits, print_all=True):
 
     levels = ['total', 'feasible', 'infeasible']
     penalties = [0, 10, data_length]
-    print("{:>20} {:>20} {:>20} {:>20}".format("", *levels))
-    print("{:>20} {:>20} {:>20} {:>20}".format('count', len(result_dict['total']), sum([len(value) for key, value in result_dict.items() if 'seen-sql:' in key or 'unseen-sql:' in key]), sum([len(value) for key, value in result_dict.items() if 'inf:' in key])))
-    print('======================================    RS    =====================================')
+    print("{:>10} {:>20} {:>20} {:>20}".format("", *levels))
+    print("{:>10} {:>20} {:>20} {:>20}".format('count', len(result_dict['total']), sum([len(value) for key, value in result_dict.items() if key.startswith('seen-sql:') or key.startswith('unseen-sql:')]), sum([len(value) for key, value in result_dict.items() if key.startswith('inf:')])))
+    print('=====================================    RS    ====================================')
     for c in penalties:
-        print("{:>20} {:>20} {:>20} {:>20}".format(f'RS({c})', 
+        print("{:>10} {:>20} {:>20} {:>20}".format(f'RS({c})', 
                 prettify_scores(100.0 * np.mean([v if v>0 else v*c for v in result_dict['total']]), ndigits),
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'seen-sql:' in key or 'unseen-sql:' in key for v in value]), ndigits),
-                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if 'inf:' in key for v in value])), ndigits))
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if key.startswith('seen-sql:') or key.startswith('unseen-sql:') for v in value]), ndigits),
+                prettify_scores(100.0 * np.mean([v if v>0 else v*c for key, value in result_dict.items() if key.startswith('inf:') for v in value])), ndigits))
     print()
+    if print_all:
+        if sum([len(value) for key, value in result_dict.items() if key.startswith('seen-sql:')]) > 0:
+            print('==================================    Seen-SQL    =================================')
+            print(f'{"":>10}'+' '.join([f'{key:>20}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('seen-sql:')]))
+            print(f'{"count":>10}'+' '.join([f'{len(value):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('seen-sql:')]))
+            print(f'{"count(+)":>10}'+' '.join([f'{sum([1 for v in value if v > 0]):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('seen-sql:')]))
+            print(f'{"count(-)":>10}'+' '.join([f'{sum([1 for v in value if v < 0]):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('seen-sql:')]))
+            for c in penalties:
+                print(f'{f"RS({c})":>10}'+' '.join([f'{prettify_scores(100.0 * sum([v if v > 0 else v*c for v in value]) / len(value), ndigits):>20}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('seen-sql:')]))
+
+        if sum([len(value) for key, value in result_dict.items() if key.startswith('unseen-sql:')]) > 0:
+            print('=================================    Unseen-SQL    ================================')
+            print(f'{"":>10}'+' '.join([f'{key:>20}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('unseen-sql:')]))
+            print(f'{"count":>10}'+' '.join([f'{len(value):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('unseen-sql:')]))
+            print(f'{"count(+)":>10}'+' '.join([f'{sum([1 for v in value if v > 0]):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('unseen-sql:')]))
+            print(f'{"count(-)":>10}'+' '.join([f'{sum([1 for v in value if v < 0]):>20}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('unseen-sql:')]))
+            for c in penalties:
+                print(f'{f"RS({c})":>10}'+' '.join([f'{prettify_scores(100.0 * sum([v if v > 0 else v*c for v in value]) / len(value), ndigits):>20}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('unseen-sql:')]))
+
+        if sum([len(value) for key, value in result_dict.items() if key.startswith('inf:')]) > 0:
+            print('======================================    Infeasible    =====================================')
+            print(f'{"":>10}'+' '.join([f'{key:>25}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('inf:')]))
+            print(f'{"count":>10}'+' '.join([f'{len(value):>25}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('inf:')]))
+            print(f'{"count(+)":>10}'+' '.join([f'{sum([1 for v in value if v > 0]):>25}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('inf:')]))
+            print(f'{"count(-)":>10}'+' '.join([f'{sum([1 for v in value if v < 0]):>25}' for key, value in result_dict.items() if len(result_dict[key])>0 and key.startswith('inf:')]))
+            for c in penalties:
+                print(f'{f"RS({c})":>10}'+' '.join([f'{prettify_scores(100.0 * sum([v if v > 0 else v*c for v in value]) / len(value), ndigits):>25}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('inf:')]))
 
 def save_error_analysis(args, data_id, db_ids, types, questions, templates, query_real, query_pred, exec_real, exec_pred, query_correct_list, exec_correct_list):
     if args.save_output:
