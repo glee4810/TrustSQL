@@ -1,17 +1,19 @@
 # 🛡️TrustSQL🛡️: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring
 
-## Overview
+The dataset will be released soon.
 
-Text-to-SQL allows users to interact with databases using natural language, simplifying information retrieval without requiring special knowledge of databases or SQL. Despite the success of large language models in translating natural language to SQL, widespread deployment remains limited due to two main challenges: (1) users' lack of understanding of the models' capabilities (e.g., individual models' text-to-SQL generation capabilities, the exact scope of database contents, and SQL functionalities) and (2) the absence of abstention mechanisms, which can result in incorrect SQL generation going unnoticed.
+<!-- ## Overview -->
 
-We believe that building trust in model outputs is crucial for the broader adoption of text-to-SQL models. As a step towards this goal, we introduce TrustSQL, a new benchmark designed to evaluate text-to-SQL reliability, defined as a model's ability to accurately handle any type of input question (i.e., correct SQL generation for feasible questions and abstention for infeasible questions). TrustSQL contains four text-to-SQL datasets (ATIS, Advising, EHRSQL, and Spider), augmented with diverse infeasible questions regarding text-to-SQL tasks (e.g., questions that go beyond database contents and SQL functionalities).
+<!-- Text-to-SQL allows users to interact with databases using natural language, simplifying information retrieval without requiring special knowledge of databases or SQL. Despite the success of large language models in translating natural language to SQL, widespread deployment remains limited due to two main challenges: (1) users' lack of understanding of the models' capabilities (e.g., individual models' text-to-SQL generation capabilities, the exact scope of database contents, and SQL functionalities) and (2) the absence of abstention mechanisms, which can result in incorrect SQL generation going unnoticed. -->
 
-With these diverse questions, we allow models to have the option to abstain while generating SQL (termed reliable text-to-SQL modeling) and evaluate their performance using a novel penalty-based scoring metric, the Reliability Score (RS), tailored to measure text-to-SQL reliability. Due to the penalty term, the challenge in TrustSQL is not only to maximize correct SQL generation for feasible questions and abstention for infeasible questions but also to minimize mistakes in SQL generation (i.e., incorrect SQL generation for feasible questions and failure to abstain from generating SQL for infeasible questions).
+<!-- We believe that building trust in model outputs is crucial for the broader adoption of text-to-SQL models. As a step towards this goal, we introduce TrustSQL, a new benchmark designed to evaluate text-to-SQL reliability, defined as a model's ability to accurately handle any type of input question (i.e., correct SQL generation for feasible questions and abstention for infeasible questions). TrustSQL contains four text-to-SQL datasets (ATIS, Advising, EHRSQL, and Spider), augmented with diverse infeasible questions regarding text-to-SQL tasks (e.g., questions that go beyond database contents and SQL functionalities). -->
 
-The benchmark data is released along with our paper [TrustSQL: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring](https://arxiv.org/abs/2403.15879) (Preprint). For further details, please refer to the paper.
+<!-- With these diverse questions, we allow models to have the option to abstain while generating SQL (termed reliable text-to-SQL modeling) and evaluate their performance using a novel penalty-based scoring metric, the Reliability Score (RS), tailored to measure text-to-SQL reliability. Due to the penalty term, the challenge in TrustSQL is not only to maximize correct SQL generation for feasible questions and abstention for infeasible questions but also to minimize mistakes in SQL generation (i.e., incorrect SQL generation for feasible questions and failure to abstain from generating SQL for infeasible questions). -->
+
+<!-- The benchmark data is released along with our paper [TrustSQL: Benchmarking Text-to-SQL Reliability with Penalty-Based Scoring](https://arxiv.org/abs/2403.15879) (Preprint). For further details, please refer to the paper. -->
 
 
-## Interactive Demo
+<!-- ## Interactive Demo
 
 <p align="middle" float="middle">
   <img src="image/demo.png" height="300" />
@@ -118,10 +120,10 @@ bash script/evaluate_sqlprompt_voting.sh
 | SQLPROMPT[Voting]    | -3.1K   | -3.6K    | -7.7K    | -5.3K    |
 - RS(N): A penalty of N (size of eval data) is applied; 1 incorrect SQL outweighs the rest of model decisions being all correct
 
-These are new results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting)
+These are new results after postprocessing updates (postprocessing after unanimous voting -> postprocessing before unanimous voting) -->
 
 
-## Have Questions?
+<!-- ## Have Questions?
 
 Ask us questions on our Github issues page or contact gyubok.lee@kaist.ac.kr.
 
@@ -135,4 +137,4 @@ Ask us questions on our Github issues page or contact gyubok.lee@kaist.ac.kr.
   journal={arXiv preprint arXiv:2403.15879},
   year={2024}
 }
-```
+``` -->

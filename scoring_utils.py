@@ -12,6 +12,9 @@ import pandas as pd
 from sqlglot import parse_one
 from func_timeout import func_timeout, FunctionTimedOut
 import multiprocessing as mp
+import warnings
+warnings.filterwarnings("ignore")
+
 from parse import remove_distinct
 from exec_eval import result_eq as spider_result_eq
 
@@ -45,11 +48,11 @@ def add_distinct(pred, real):
         real_toks = [t.value for t in list(sqlparse.parse(real_pre)[0].flatten())]
 
         if len(pred_toks) >= 4:
-            if real_toks[2].lower() == 'distinct' and pred_toks[2].lower() != 'distinct':
+            if real_toks[2].lower() == 'distinct' and pred_toks[2] != '*' and pred_toks[2].lower() != 'distinct':
                 pred_toks = pred_toks[:2] + ['DISTINCT', ' '] + pred_toks[2:] + [' FROM', pred_post]
                 return ''.join(pred_toks)
 
-            if real_toks[4].lower() == 'distinct' and pred_toks[4].lower() != 'distinct':
+            if real_toks[4].lower() == 'distinct' and pred_toks[4] != '*' and pred_toks[4].lower() != 'distinct':
                 pred_toks = pred_toks[:4] + ['DISTINCT', ' '] + pred_toks[4:] + [' FROM', pred_post]
                 return ''.join(pred_toks)
             
@@ -87,8 +90,13 @@ def prettify_scores(score, decimals=1, use_thousands_suffix=True):
     return f"{score:.{decimals}f}"
 
 def load_json(pred_file):
-    with open(pred_file, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    try:
+        with open(pred_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except: # adjustment due to mac-sql
+        with open(pred_file, 'r') as f:
+            lines = [json.loads(line) for line in f.readlines()]
+        return lines
 
 def save_json(data, file_path):
     with open(file_path, 'w') as f:
@@ -210,8 +218,8 @@ def check_answer(real, pred, gt_sql, db_id):
             pred = [[r] for r in np.unique(pred)]
             if pred == [['None']]:
                 pred = [['0.0']]
-            elif pred not in [[['0.0']], [['1.0']]]:
-                pred = [[f'{len(pred)}.0']]
+            elif pred != [['0.0']]:
+                pred = [['1.0']]
         exec_acc = (real == pred)
     else:
         order_matters = 'order by' in gt_sql.lower()
@@ -301,7 +309,11 @@ def prepare_query_dicts(data, prediction):
     real_dict, pred_dict, db_dict, type_dict, nlq_dict, temp_dict = {}, {}, {}, {}, {}, {}
     for line in data:
         real = postprocess_gt(line['query'], db_id=line['db_id'])
-        pred = prediction[line['id']]
+        try:
+            pred = prediction[line['id']]
+        except:
+            print(line['id'])
+            pred = 'null'
         if line['db_id'] in ['atis', 'advising', 'mimic_iv']: # adjustment for models with no in-domain examples
             pred = add_distinct(pred, real)
 
@@ -326,7 +338,7 @@ def execute_queries(data, prediction, db_path, num_workers, timeout):
     
     return real_dict, pred_dict, real_result, pred_result, db_dict, type_dict, nlq_dict, temp_dict
 
-def print_results(result_dict, data_length, ndigits, print_all=True):
+def print_results(result_dict, data_length, ndigits, print_all=False):
 
     levels = ['total', 'feasible', 'infeasible']
     penalties = [0, 10, data_length]
@@ -367,6 +379,8 @@ def print_results(result_dict, data_length, ndigits, print_all=True):
             for c in penalties:
                 print(f'{f"RS({c})":>10}'+' '.join([f'{prettify_scores(100.0 * sum([v if v > 0 else v*c for v in value]) / len(value), ndigits):>25}' for key, value in result_dict.items() if len(value) > 0 and key.startswith('inf:')]))
 
+        import pdb; pdb.set_trace()
+
 def save_error_analysis(args, data_id, db_ids, types, questions, templates, query_real, query_pred, exec_real, exec_pred, query_correct_list, exec_correct_list):
     if args.save_output:
         os.makedirs(args.save_path, exist_ok=True)
@@ -384,4 +398,4 @@ def save_error_analysis(args, data_id, db_ids, types, questions, templates, quer
             'pred_exe': exec_pred,
             'exec_acc': exec_correct_list
         })
-        df.to_excel(f'{args.save_path}/{file_path}_error_analysis.xlsx', index=False)
+        df.to_excel(f'{args.save_path}/{file_path}.xlsx', index=False)
