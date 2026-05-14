@@ -1,0 +1,13 @@
+dataset: advising
+db_id: advising
+test_data_path : dataset/advising/advising_test.json
+exp_name : eval_advising_test_t5-3b-picard-none-finetuned
+
+mode: eval
+model_name: tscholak/cxmefzzi
+load_model_path: outputs/advising_t5-3b-picard-none/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: true
+
+tables_path: dataset/advising/tables.json
+add_schema: false

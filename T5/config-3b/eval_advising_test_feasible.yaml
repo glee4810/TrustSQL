@@ -1,0 +1,13 @@
+dataset: advising
+db_id: advising
+test_data_path : dataset/advising/advising_test_feasible.json
+exp_name : eval_advising_test_feasible_t5-3b-finetuned
+
+mode: eval
+model_name: google-t5/t5-3b
+load_model_path: outputs/advising_t5-3b/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: true
+
+tables_path: dataset/advising/tables.json
+add_schema: true

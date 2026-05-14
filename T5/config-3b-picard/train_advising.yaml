@@ -1,0 +1,23 @@
+dataset: advising
+db_id: advising
+train_data_path : dataset/advising/advising_train.json
+valid_data_path : dataset/advising/advising_valid.json
+
+exp_name : advising_t5-3b-picard
+model_name: tscholak/cxmefzzi
+mode: train
+load_model_path: 
+train_batch_size: 2
+accumulation_steps: 16
+eval_every_step: 500
+eval_batch_size: 2
+training_data_ratio: 1.0
+bf16: true
+optim: adam
+lr: 0.0001
+
+tables_path: dataset/advising/tables.json
+add_schema: true
+
+use_wandb: false
+wandb_project: reliable-semantic-parsing

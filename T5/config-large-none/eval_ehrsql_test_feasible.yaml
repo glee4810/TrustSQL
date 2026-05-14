@@ -1,0 +1,13 @@
+dataset: ehrsql
+db_id: mimic_iv
+test_data_path : dataset/ehrsql/ehrsql_test_feasible.json
+exp_name : eval_ehrsql_test_feasible_t5-large-none-finetuned
+
+mode: eval
+model_name: google-t5/t5-large
+load_model_path: outputs/ehrsql_t5-large-none/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: false
+
+tables_path: dataset/ehrsql/tables.json
+add_schema: false

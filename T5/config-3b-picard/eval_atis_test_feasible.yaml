@@ -1,0 +1,13 @@
+dataset: atis
+db_id: atis
+test_data_path : dataset/atis/atis_test_feasible.json
+exp_name : eval_atis_test_feasible_t5-3b-finetuned
+
+mode: eval
+model_name: tscholak/cxmefzzi
+load_model_path: outputs/atis_t5-3b-picard/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: true
+
+tables_path: dataset/atis/tables.json
+add_schema: true

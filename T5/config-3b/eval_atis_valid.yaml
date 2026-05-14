@@ -1,0 +1,13 @@
+dataset: atis
+db_id: atis
+test_data_path : dataset/atis/atis_valid.json
+exp_name : eval_atis_valid_t5-3b-finetuned
+
+mode: eval
+model_name: google-t5/t5-3b
+load_model_path: outputs/atis_t5-3b/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: true
+
+tables_path: dataset/atis/tables.json
+add_schema: true

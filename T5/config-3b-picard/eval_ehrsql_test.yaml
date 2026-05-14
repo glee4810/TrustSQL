@@ -1,0 +1,13 @@
+dataset: ehrsql
+db_id: mimic_iv
+test_data_path : dataset/ehrsql/ehrsql_test.json
+exp_name : eval_ehrsql_test_t5-3b-picard-finetuned
+
+mode: eval
+model_name: tscholak/cxmefzzi
+load_model_path: outputs/ehrsql_t5-3b-picard/checkpoint_best.pth.tar
+eval_batch_size: 4
+bf16: true
+
+tables_path: dataset/ehrsql/tables.json
+add_schema: true

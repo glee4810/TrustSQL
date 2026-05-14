@@ -1,0 +1,3 @@
+CUDA_VISIBLE_DEVICES=7 python T5/calculate_output_embedding.py --eval_data_path ./dataset/atis/atis_test.json --inference_config_path ./T5/config-large/eval_atis_test.yaml --save_path atis_t5-large --background_data_path 'TriageSQL v1.3'
+CUDA_VISIBLE_DEVICES=7 python T5/calculate_output_embedding.py --eval_data_path ./dataset/advising/advising_test.json --inference_config_path ./T5/config-large/eval_advising_test.yaml --save_path advising_t5-large --background_data_path 'TriageSQL v1.3'
+CUDA_VISIBLE_DEVICES=7 python T5/calculate_output_embedding.py --eval_data_path ./dataset/ehrsql/ehrsql_test.json --inference_config_path ./T5/config-large/eval_ehrsql_test.yaml --save_path ehrsql_t5-large --background_data_path 'TriageSQL v1.3'
